@@ -288,6 +288,11 @@ package
 					byteArray.writeByte(parseInt(s.substr(iii * 8, 8), 2));
 				}
 			}
+			else if (typeName == "Number")
+			{
+				//byteArray.writeDouble(Number(object));
+				byteArray.writeFloat(Number(object));
+			}
 			else
 			{
 				var variables:XMLList=objectXml.variable as XMLList;
@@ -316,7 +321,7 @@ package
 						{
 							num=0;
 						}
-						byteArray.writeFloat(num);
+						byteArray.writeDouble(num);
 					}
 					else if (obj.type == "String")
 					{

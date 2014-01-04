@@ -90,6 +90,10 @@ package
 						out.push(new Int64(parseFloat(line.val.text)));
 						break;
 					}
+					case "f64":{
+						out.push(parseFloat(line.val.text));
+						break;
+					}
 					case "String":{
 						out.push(line.val.text);
 						break;
@@ -121,7 +125,7 @@ import flash.events.MouseEvent;
 class Line extends HBox{
 	public var dropDown:ComboBox;
 	public var val:InputText;
-	public static var TYPES:Array = ["8","16","32","64","String"];
+	public static var TYPES:Array = ["8","16","32","64","f64","String"];
 	public function Line(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0):void{
 		super(parent,xpos,ypos);
 		dropDown = new ComboBox(this,0,0,"Type",TYPES);	
