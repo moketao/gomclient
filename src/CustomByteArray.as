@@ -1,12 +1,12 @@
 package 
 {
+	import flash.utils.ByteArray;
+	import flash.utils.Endian;
+	
 	import common.baseData.Int16;
 	import common.baseData.Int32;
 	import common.baseData.Int64;
 	import common.baseData.Int8;
-	
-	import flash.utils.ByteArray;
-	import flash.utils.Endian;
 
 	public class CustomByteArray extends ByteArray
 	{
@@ -127,6 +127,20 @@ package
 		public function writeString(value:String):void
 		{
 			this.writeUTF(value);
+		}
+		
+		public function traceBytes():void{
+			var out:String = "[ ";
+			for (var i:int = 0; i < this.length; i++) 
+			{
+				var byte:uint = this[i] as uint;
+				var s:String=byte.toString(2);
+				s = ("00000000"+s).substr(-8)+" ";
+				out += s;
+			}
+			out += "]";
+			this.position = 0;
+			trace(out);
 		}
 	}
 }
