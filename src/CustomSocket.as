@@ -9,21 +9,8 @@ package
 	import flash.external.ExternalInterface;
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
-	import flash.utils.Dictionary;
-	import flash.utils.Endian;
-	import flash.utils.describeType;
-	import flash.utils.getDefinitionByName;
 	
-	import CommandMap;
-	
-	import common.baseData.BitArray;
-	import common.baseData.Int1;
-	import common.baseData.Int16;
-	import common.baseData.Int2;
-	import common.baseData.Int32;
-	import common.baseData.Int4;
-	import common.baseData.Int64;
-	import common.baseData.Int8;
+	import common.baseData.Pack;
 
 
 	//	import uisystem.view.UiSystemMediator;	
@@ -35,20 +22,13 @@ package
 	 */
 	public class CustomSocket extends Socket
 	{
-		public static var ip:String;
-		public static var port:int;
-		public static const tgwStrPre:String = "tgw_l7_forward\r\nHost: ";
-		public static const tgwStrEnd:String = "\r\n\r\n";
-		private static var one:CustomSocket;
-
-		/**
-		 *是否已接收到策略字串
-		 */
-		private var _isrecvProcy:Boolean=false;
-
-		private var _retryTime:int=0;
-			private var deadIdle:Dictionary;
-
+		public static var ip:String;		//IP
+		public static var port:int;			//端口
+		private static const tgwStrPre:String = "tgw_l7_forward\r\nHost: ";	//腾讯网关第一个包需要发送的内容1
+		private static const tgwStrEnd:String = "\r\n\r\n";					//腾讯网关第一个包需要发送的内容2
+		private static var one:CustomSocket;//单例
+		private var retryTimes:int=0;		//重新连接的次数
+		private var firstPack:Boolean=true;	//是否第一个发送给后端的包
 
 		/**
 		 *构造函数
@@ -63,6 +43,10 @@ package
 			_ccmdParseDic=new HashMap();
 			_scmdParseDic=new HashMap();
 		}
+		
+		/**
+		 * 单例
+		 */
 		public static function getInstance():CustomSocket
 		{
 			if (one == null)
@@ -90,10 +74,8 @@ package
 		{
 			var tgwStr:String=tgwStrPre + ip + ":" + port + tgwStrEnd;
 			sendBytes.writeMultiByte(tgwStr, "GBK");
-			_isFirstSend=false;
+			firstPack=false;
 		}
-
-		private var _isFirstSend:Boolean=true;
 
 		/**
 		 *配置socket监听事件
@@ -126,12 +108,6 @@ package
 		 */
 		private function socketDataHandler(event:ProgressEvent):void
 		{
-			//是否正在读取 ↓
-			if(isReading) return;
-			
-			//读取开始
-			isReading = true;
-			
 			//loop 函数负责读取包头和包体，由于多个包有可能连着一起同时到来，所以 loop 函数可能会执行多次。
 			function loop():void{
 				
@@ -160,9 +136,6 @@ package
 			
 			//启动 loop 函数
 			loop();
-			
-			//读取结束
-			isReading = false;
 		}
 		/**
 		 * 处理从服务端收到的数据
@@ -196,9 +169,8 @@ package
 
 		private function connectHandler(event:Event):void
 		{
-			_isrecvProcy=false;
-			_retryTime=0;
-			_isFirstSend=true;
+			retryTimes=0;
+			firstPack=true;
 		}
 
 		/**
@@ -223,7 +195,7 @@ package
 			ExternalInterface.call("flashMsg", "联接游戏服务器失败，请刷新当前页面。" + ip + ":" + port);
 			try
 			{
-				if (_retryTime > 3)
+				if (retryTimes > 3)
 				{
 					this.close();
 					throw new Error("服务器已关闭");
@@ -231,7 +203,7 @@ package
 				else
 				{
 					connect(ip, port);
-					_retryTime++
+					retryTimes++
 				}
 			}
 			catch (e:Error)
@@ -247,149 +219,6 @@ package
 		private var Len:int=0;
 		private var Body:ByteArray = new ByteArray();
 		
-		/**
-		 * 将二进制数据映射到对象
-		 */
-		private function mappingObject(valueObject:Object, dataBytes:CustomByteArray):Object
-		{
-
-			if (valueObject is ISocketIn)
-			{
-				return valueObject.mappingObject(dataBytes);
-			}
-			var objectXml:XML=describeType(valueObject);
-			var variables:XMLList=objectXml.variable as XMLList;
-			var tempMessagArray:Array=[];
-			for each (var ms:XML in variables)
-			{
-				tempMessagArray.push({name: String(ms.@name), type: String(ms.@type)});
-			}
-			tempMessagArray=tempMessagArray.sortOn("name");
-
-			var bitArray:BitArray;
-			for each (var obt:Object in tempMessagArray)
-			{
-				if (dataBytes.bytesAvailable <= 0)
-				{ //如果数据包没有了  将停止解析
-					break;
-				}
-				if (!(obt.type == "common.baseData::Int4" || obt.type == "common.baseData::Int2" || obt.type == "common.baseData::Int1"))
-				{
-					bitArray=null;
-				}
-				if (obt.type == "uint")
-				{
-					valueObject[obt.name]=dataBytes.readShort();
-				}
-				else if (obt.type == "int")
-				{
-					valueObject[obt.name]=dataBytes.readInt();
-
-				}
-				else if (obt.type == "Number")
-				{
-					valueObject[obt.name]=dataBytes.readFloat();
-
-				}
-				else if (obt.type == "String")
-				{
-					try
-					{
-						valueObject[obt.name]=dataBytes.readUTF();
-					}
-					catch (e:Error)
-					{
-						throw new Error(e.message);
-					}
-				}
-				else if (obt.type == "common.baseData::Int64")
-				{
-					var number:Number=dataBytes.readUnsignedByte() * Math.pow(256, 7);
-					number+=dataBytes.readUnsignedByte() * Math.pow(256, 6);
-					number+=dataBytes.readUnsignedByte() * Math.pow(256, 5);
-					number+=dataBytes.readUnsignedByte() * Math.pow(256, 4);
-					number+=dataBytes.readUnsignedByte() * Math.pow(256, 3);
-					number+=dataBytes.readUnsignedByte() * Math.pow(256, 2);
-					number+=dataBytes.readUnsignedByte() * Math.pow(256, 1);
-					number+=dataBytes.readUnsignedByte() * 1;
-					valueObject[obt.name]=new Int64(number);
-				}
-				else if (obt.type == "common.baseData::Int32")
-				{
-					valueObject[obt.name]=new Int32(dataBytes.readInt());
-				}
-				else if (obt.type == "common.baseData::Int16")
-				{
-					valueObject[obt.name]=new Int16(dataBytes.readShort());
-				}
-				else if (obt.type == "common.baseData::Int8")
-				{
-					valueObject[obt.name]=new Int8(dataBytes.readByte());
-				}
-				else if (obt.type == "common.baseData::Int4")
-				{
-					if (bitArray == null || bitArray.position + 4 > 8)
-					{
-						bitArray=new BitArray(dataBytes.readUnsignedByte());
-					}
-					valueObject[obt.name]=new Int4(bitArray.getBits(4));
-				}
-				else if (obt.type == "common.baseData::Int2")
-				{
-					if (bitArray == null || bitArray.position + 2 > 8)
-					{
-						bitArray=new BitArray(dataBytes.readUnsignedByte());
-					}
-					valueObject[obt.name]=new Int2(bitArray.getBits(2));
-				}
-				else if (obt.type == "common.baseData::Int1")
-				{
-					if (bitArray == null || bitArray.position + 1 > 8)
-					{
-						bitArray=new BitArray(dataBytes.readUnsignedByte());
-					}
-					valueObject[obt.name]=new Int1(bitArray.getBits(1));
-				}
-				else
-				{
-					//					处理服务端单个属性是list的情况.
-					var circleTimes:uint=dataBytes.readShort();
-					//log.gjDebug("轮询次数" +circleTimes);
-					var objs:Array=valueObject[obt.name];
-					objectXml=describeType(objs.pop());
-					for (var i:int=0; i < circleTimes; i++)
-					{
-						var VO:Class=getDefinitionByName(objectXml.@name) as Class;
-						var vo:Object=new VO();
-						//只支持32位整数和字符串还有其他类型，请注意
-						if (objectXml.@name == "int")
-						{
-							objs.push(dataBytes.readInt());
-						}
-						else if (objectXml.@name == "String")
-						{
-							objs.push(dataBytes.readUTF());
-						}
-						else
-						{
-							objs.push(mappingObject(vo, dataBytes));
-						}
-						VO=null;
-						vo=null;
-					}
-
-				}
-			}
-			objectXml=null;
-			variables=null;
-			tempMessagArray=null;
-			ms=null;
-			obt=null;
-			VO=null;
-			objs=null;
-
-			return valueObject;
-		}
 
 		/**
 		 *添加某个消息号的监听
@@ -420,150 +249,7 @@ package
 				}
 			}
 		}
-		/**
-		 * 封装数据发送
-		 */
-		private function packageData(cmd:uint, object:Object):CustomByteArray
-		{
-			if (object is ISocketOut)
-			{
-				return object.packageData();
-			}
-			var byteArray:CustomByteArray=new CustomByteArray();
-			//byteArray.endian = Endian.LITTLE_ENDIAN;
-			var objectXml:XML=describeType(object);
-			var typeName:String=objectXml.@name;
-			if (typeName == "uint")
-			{
-				byteArray.writeShort(uint(object));
-				return byteArray;
-			}
-			else if (typeName == "int")
-			{
-				byteArray.writeInt(int(object));
-				return byteArray;
-			}
-			else if (typeName == "String")
-			{
-				byteArray.writeUTF(String(object));
-				return byteArray;
-			}
-			else if (typeName == "common.baseData::Int32")
-			{
-				byteArray.writeInt(object.value);
-				return byteArray;
-			}
-			else if (typeName == "common.baseData::Int16")
-			{
-				byteArray.writeShort(object.value);
-				return byteArray;
-			}
-			else if (typeName == "common.baseData::Int8")
-			{
-				byteArray.writeByte(object.value);
-				return byteArray;
-			}
-			else if (typeName == "common.baseData::Int64")
-			{
-				var s:String=object.value.toString(2);
-				s=("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + s).substr(-64);
-				for (var iii:int=0; iii < 8; iii++)
-				{
-					byteArray.writeByte(parseInt(s.substr(iii * 8, 8), 2));
-				}
-			}
-			else if (typeName == "Number")
-			{
-				//byteArray.writeDouble(Number(object));
-				byteArray.writeFloat(Number(object));
-			}
-			else
-			{
-				var variables:XMLList=objectXml.variable as XMLList;
-				var tempMessagArray:Array=[];
-				for each (var ms:XML in variables)
-				{
-					tempMessagArray.push({name: ms.@name, type: ms.@type});
-				}
-				
-				tempMessagArray=tempMessagArray.sortOn("name");
-				for each (var obj:Object in tempMessagArray)
-				{
-					if (obj.type == "uint")
-					{
-						byteArray.writeShort(object[obj.name] as uint);
-					}
-					else if (obj.type == "int")
-					{
-						byteArray.writeInt(object[obj.name] as int);
-						
-					}
-					else if (obj.type == "Number")
-					{
-						var num:Number=object[obj.name] as Number;
-						if (isNaN(num))
-						{
-							num=0;
-						}
-						byteArray.writeDouble(num);
-					}
-					else if (obj.type == "String")
-					{
-						var str:String=object[obj.name];
-						if (str == null)
-						{
-							str=" ";
-						}
-						byteArray.writeUTF(str);
-					}
-					else if (obj.type == "common.baseData::Int64")
-					{
-						var s3:String=object[obj.name].value.toString(2);
-						s3=("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + s3).substr(-64);
-						for (var ii:int=0; ii < 8; ii++)
-						{
-							byteArray.writeByte(parseInt(s3.substr(ii * 8, 8), 2)); //parseInt(s3.substr(ii*8,8),2)
-						}
-					}
-					else if (obj.type == "common.baseData::Int32")
-					{
-						byteArray.writeInt(object[obj.name].value);
-					}
-					else if (obj.type == "common.baseData::Int16")
-					{
-						byteArray.writeShort(object[obj.name].value);
-					}
-					else if (obj.type == "common.baseData::Int8")
-					{
-						byteArray.writeByte(object[obj.name].value);
-					}
-					else
-					{
-						var tempObj:Object=object[obj.name];
-						if (tempObj is Array)
-						{
-							byteArray.writeShort((tempObj as Array).length);
-							for each (var innerObj:Object in tempObj)
-							{
-								var tempByte:CustomByteArray=packageData(0, innerObj);
-								byteArray.writeBytes(tempByte, 0, tempByte.length);
-							}
-						}
-						else
-						{
-							//					处理依赖关系  即对象中装有其他对象
-							tempByte=packageData(0, tempObj);
-							byteArray.writeBytes(tempByte, 0, tempByte.length);
-						}
-						tempObj=null;
-						innerObj=null;
-						tempByte=null;
-					}
-				}
-			}
-			object=null;
-			return byteArray;
-		}
+
 		/**
 		 * 封装消息
 		 */
@@ -583,25 +269,24 @@ package
 					var byteArray:CustomByteArray;
 					for (var i:int=0; i < object.length; i++)
 					{
-						byteArray=this.packageData(cmd, object[i]);
+						byteArray=Pack.packageData(cmd, object[i]);
 						dataBytes.writeBytes(byteArray, 0, byteArray.length);
 					}
 				}
 				else
 				{
-					byteArray=this.packageData(cmd, object);
+					byteArray=Pack.packageData(cmd, object);
 					dataBytes.writeBytes(byteArray, 0, byteArray.length);
 					
 				}
 			}
 			//装包 
 			var sendBytes:CustomByteArray=new CustomByteArray();
-			if (_isFirstSend && ip!="127.0.0.1")
+			if (firstPack && ip!="127.0.0.1")
 			{
 				addTgwHead(sendBytes)//第一个包，加tgw包头，服务端将丢弃第一个包
 			}
 			sendBytes.writeShort(dataBytes.length+2);
-			trace("发送总长度"+(dataBytes.length+2)+"的数据");
 			sendBytes.writeShort(cmd);
 			
 			//todo:数组处理逻辑
