@@ -10,10 +10,10 @@
 2、生成协议文件
 
 
-![image]https://github.com/moketao/gomclient/raw/master/readme_pic/1.png
+![image](https://github.com/moketao/gomclient/raw/master/readme_pic/1.png)
 
 
 以上操作生成如下文件↓
 
 
-![image]https://github.com/moketao/gomclient/raw/master/readme_pic/2.png
+![image](https://github.com/moketao/gomclient/raw/master/readme_pic/2.png)
