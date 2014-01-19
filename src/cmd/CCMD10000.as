@@ -36,19 +36,17 @@ package cmd
 			
 		}
 		
-		public function packageData():CustomByteArray
+		public function packageData(b:CustomByteArray):void
 		{
-			var byteArray:CustomByteArray=new CustomByteArray();
-			byteArray.writeInt16(a_serverId);
-			byteArray.writeString(a_openId);
-			byteArray.writeString(b_openKey);
-			byteArray.writeString(c_pf);
-			byteArray.writeString(d_pfKey);
-			byteArray.writeString(e_invKey);
-			byteArray.writeString(f_itime);
-			byteArray.writeString(g_iopenId);
-			byteArray.writeString(h_checkLogin);
-			return byteArray;
+			b.writeInt16(a_serverId);
+			b.writeString(a_openId);
+			b.writeString(b_openKey);
+			b.writeString(c_pf);
+			b.writeString(d_pfKey);
+			b.writeString(e_invKey);
+			b.writeString(f_itime);
+			b.writeString(g_iopenId);
+			b.writeString(h_checkLogin);
 		}
 		
 	}

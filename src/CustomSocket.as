@@ -127,7 +127,7 @@ package
 						readBytes(Body, 0, Len);	//数据 Body
 						Len = 0;
 						getMsg(Body);				//★处理数据
-						loop();						//如果是多个包连着一起发来给前端（黏包），则继续  loop 函数
+						loop();						//★如果是多个包连着一起发来给前端（黏包），则继续  loop 函数
 					}else{
 						return;						//如果将要读取的 body 部分的数据还不够长，则return，等待下一次  ProgressEvent.SOCKET_DATA 触发
 					}
