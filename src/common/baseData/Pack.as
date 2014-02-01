@@ -56,8 +56,8 @@ package common.baseData
 			}
 			else if (typeName == "Number")
 			{
-				//byteArray.writeDouble(Number(object));
-				byteArray.writeFloat(Number(object));
+				byteArray.writeDouble(Number(object));
+				//byteArray.writeFloat(Number(object));
 			}
 			else
 			{
