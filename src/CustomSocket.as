@@ -267,7 +267,7 @@ package
 			if (object != null)
 			{
 				var Ipack:ISocketUp = object as ISocketUp;
-				if(!Ipack) Alert.show("sendMessage 的第二个参数必须是 ISocketUp");
+				if(!Ipack) Alert.show("sendMessage 的第二个参数必须是 ISocketUp"); return;
 				Ipack.PackInTo(dataBytes);
 				dataBytes.position = 0;
 			}
