@@ -1,7 +1,5 @@
 package common.baseData
 {
-	import game.socket.CustomByteArray;
-
 	public class Int16 extends BaseInt
 	{
 		public function Int16(value:int=-1)

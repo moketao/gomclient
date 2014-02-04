@@ -15,10 +15,19 @@ package
 	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
 	
+	import cmd.C20000Up;
+	import cmd.PosVO;
+	
+	import common.baseData.F32;
+	import common.baseData.F64;
 	import common.baseData.Int16;
 	import common.baseData.Int32;
 	import common.baseData.Int64;
 	import common.baseData.Int8;
+	import common.baseData.IntU16;
+	import common.baseData.IntU32;
+	import common.baseData.IntU64;
+	import common.baseData.IntU8;
 	
 	import mycom.Alert;
 	
@@ -45,9 +54,9 @@ package
 		public var CmdFileNameList:ComboBox;
 		public var CmdList:List;
 		public var body:VBox;
-		public var cmd_name:InputText;
+		public var cmd_desc:InputText;
 
-		public var cmd_num:InputText;
+		public var cmd_name:InputText;
 
 		public var pathClient:InputText;
 
@@ -70,13 +79,21 @@ package
 
 		public function click_Send(e:MouseEvent):void
 		{
-			var cmd:int=parseInt(cmd_num.text);
-			s.sendMessage(cmd, getLines());
+			var p1:PosVO = new PosVO();
+				p1.arr = [33,55];
+				p1.str = "我是p1";
+			var p2:PosVO = new PosVO();
+				p2.arr = [7,8];
+				p2.str = "我是p2";	
+			var c:C20000Up = new C20000Up();
+				c.a1 = [p1,p2];
+				c.a2 = 127;
+			s.sendMessage(20000,c);
 		}
 
 		public function click_save(e:MouseEvent):void
 		{
-			if (cmd_num.text == "" && cmd_name.text == "" && body.numChildren == 0)
+			if (cmd_name.text == "" || cmd_desc.text == "" || body.numChildren == 0)
 			{
 				Alert.show("未填写完整");
 				return;
@@ -89,68 +106,24 @@ package
 					Alert.show("未填写完整");
 					return;
 				}
+				if(d.type=="Array"){
+					if(d.desc.indexOf("[")==-1){
+						Alert.show("未指定数组内部的数据类型，请在desc中用类似 [NodeClassName] 的格式来指定",17);
+						return;
+					}
+				}
 			}
 			var upOrDown:String=up_down1.selected ? "Up" : "Down";
 			if (upOrDown == "Up")
 			{
-				//ClientUp.save(this);
+				ClientUp.save(this);
 				ServerUp.save(this);
+				Alert.show("保存完成");
 			}
 			else
 			{
 
 			}
-		}
-
-
-
-		public function fixComment(lines:String):String
-		{
-			var out:String="";
-			var a:Array=lines.split("\n");
-			var maxNum:int=0;
-			var a1:Array=[];
-			var a2:Array=[];
-			for (var i:int=0; i < a.length; i++)
-			{
-				var s:String=String(a[i]);
-				var commentPos:int=s.indexOf("//");
-				if (commentPos != -1)
-				{
-					var tmp:String=s.slice(0, commentPos);
-					a1.push(tmp);
-					a2.push(s.slice(commentPos + 2));
-					s=tmp;
-				}
-				else
-				{
-					a1.push(s);
-					a2.push("");
-				}
-				var len:int=s.length;
-				if (len > maxNum)
-					maxNum=s.length;
-			}
-			for (var k:int=0; k < a1.length; k++)
-			{
-				var aline:String=a1[k];
-				var acomm:String=a2[k];
-				var spaceNum:int=maxNum + 1 - aline.length;
-				var space:String="";
-				for (var j:int=0; j < spaceNum; j++)
-				{
-					space+=" ";
-				}
-				if (acomm != "")
-				{
-					out+="\n" + aline + space + "//" + acomm;
-				}
-				else if (aline != "")
-				{
-					out+="\n" + aline;
-				}
-			}
-			return out;
 		}
 
 		public function getLines():Array
@@ -181,9 +154,14 @@ package
 						out.push(new Int64(parseFloat(line.val.text)));
 						break;
 					}
+					case "f32":
+					{
+						out.push(new F32(parseFloat(line.val.text)));
+						break;
+					}
 					case "f64":
 					{
-						out.push(parseFloat(line.val.text));
+						out.push(new F64(parseFloat(line.val.text)));
 						break;
 					}
 					case "String":
@@ -191,6 +169,28 @@ package
 						out.push(line.val.text);
 						break;
 					}
+					case "u8":
+					{
+						out.push(new IntU8(parseFloat(line.val.text)));
+						break;
+					}
+					case "u16":
+					{
+						out.push(new IntU16(parseFloat(line.val.text)));
+						break;
+					}
+					case "u32":
+					{
+						out.push(new IntU32(parseFloat(line.val.text)));
+						break;
+					}
+					case "u64":
+					{
+						out.push(new IntU64(parseFloat(line.val.text)));
+						break;
+					}
+					default:
+						throw new Error("不可识别类型");
 				}
 			}
 
@@ -239,17 +239,17 @@ package
 
 			var btn_add:PushButton=new PushButton(head, 0, 0, "Add", click_AddData);
 
-			var cmd_num_label:Label=new Label(head, 0, 0, "cmd_num");
-			cmd_num_label.height=20;
-			cmd_num=new InputText(head);
-			cmd_num.height=20;
+			var cmd_name_label:Label=new Label(head, 0, 0, "cmd_num_or_node_name");
+			cmd_name_label.height=20;
+			cmd_name=new InputText(head);
+			cmd_name.height=20;
 
 			up_down1=new RadioButton(head, 20, 5, "up", true);
 			up_down2=new RadioButton(head, 0, 5, "down");
-			var cmd_filename_label:Label=new Label(head, 10, 0, "  cmd_name");
+			var cmd_filename_label:Label=new Label(head, 10, 0, "  cmd_desc");
 			cmd_filename_label.height=20;
-			cmd_name=new InputText(head);
-			cmd_name.height=20;
+			cmd_desc=new InputText(head);
+			cmd_desc.height=20;
 
 			var btn_send:PushButton=new PushButton(head, 0, 0, "Send", click_Send);
 			var btn_connet:PushButton=new PushButton(head, 0, 0, "reConnet", click_Conn);

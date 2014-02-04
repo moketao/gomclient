@@ -7,7 +7,7 @@ package common.baseData
 	{
 		public static function packageData(cmd:uint, object:Object):CustomByteArray
 		{
-			if (object is ISocketOut)
+			if (object is ISocketUp)
 			{
 				return object.packageData();
 			}
@@ -17,7 +17,7 @@ package common.baseData
 			var typeName:String=objectXml.@name;
 			if (typeName == "uint")
 			{
-				byteArray.writeShort(uint(object));
+				byteArray.writeUnsignedInt(uint(object));
 				return byteArray;
 			}
 			else if (typeName == "int")
@@ -47,6 +47,7 @@ package common.baseData
 			}
 			else if (typeName == "common.baseData::Int64")
 			{
+				//todo:有问题，这里输出的不是int64而是uint64，需修正
 				var s:String=object.value.toString(2);
 				s=("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + s).substr(-64);
 				for (var iii:int=0; iii < 8; iii++)
@@ -54,13 +55,32 @@ package common.baseData
 					byteArray.writeByte(parseInt(s.substr(iii * 8, 8), 2));
 				}
 			}
+			else if (typeName == "common.baseData::F32")
+			{
+				byteArray.writeFloat(Number(object.value));
+			}
+			else if (typeName == "common.baseData::F64")
+			{
+				byteArray.writeDouble(Number(object.value));
+			}
 			else if (typeName == "Number")
 			{
 				byteArray.writeDouble(Number(object));
 				//byteArray.writeFloat(Number(object));
 			}
+			else if (object is Array)
+			{
+				//数组
+				byteArray.writeShort((object as Array).length);
+				for each (var innerObj:Object in object)
+				{
+					var tempByte:CustomByteArray=packageData(0, innerObj);
+					byteArray.writeBytes(tempByte, 0, tempByte.length);
+				}
+			}
 			else
 			{
+				//对象
 				var variables:XMLList=objectXml.variable as XMLList;
 				var tempMessagArray:Array=[];
 				for each (var ms:XML in variables)
@@ -69,78 +89,10 @@ package common.baseData
 				}
 				
 				tempMessagArray=tempMessagArray.sortOn("name");
-				for each (var obj:Object in tempMessagArray)
+				for each (var a:Object in tempMessagArray)
 				{
-					if (obj.type == "uint")
-					{
-						byteArray.writeShort(object[obj.name] as uint);
-					}
-					else if (obj.type == "int")
-					{
-						byteArray.writeInt(object[obj.name] as int);
-						
-					}
-					else if (obj.type == "Number")
-					{
-						var num:Number=object[obj.name] as Number;
-						if (isNaN(num))
-						{
-							num=0;
-						}
-						byteArray.writeDouble(num);
-					}
-					else if (obj.type == "String")
-					{
-						var str:String=object[obj.name];
-						if (str == null)
-						{
-							str=" ";
-						}
-						byteArray.writeUTF(str);
-					}
-					else if (obj.type == "common.baseData::Int64")
-					{
-						var s3:String=object[obj.name].value.toString(2);
-						s3=("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + s3).substr(-64);
-						for (var ii:int=0; ii < 8; ii++)
-						{
-							byteArray.writeByte(parseInt(s3.substr(ii * 8, 8), 2)); //parseInt(s3.substr(ii*8,8),2)
-						}
-					}
-					else if (obj.type == "common.baseData::Int32")
-					{
-						byteArray.writeInt(object[obj.name].value);
-					}
-					else if (obj.type == "common.baseData::Int16")
-					{
-						byteArray.writeShort(object[obj.name].value);
-					}
-					else if (obj.type == "common.baseData::Int8")
-					{
-						byteArray.writeByte(object[obj.name].value);
-					}
-					else
-					{
-						var tempObj:Object=object[obj.name];
-						if (tempObj is Array)
-						{
-							byteArray.writeShort((tempObj as Array).length);
-							for each (var innerObj:Object in tempObj)
-							{
-								var tempByte:CustomByteArray=packageData(0, innerObj);
-								byteArray.writeBytes(tempByte, 0, tempByte.length);
-							}
-						}
-						else
-						{
-							//					处理依赖关系  即对象中装有其他对象
-							tempByte=packageData(0, tempObj);
-							byteArray.writeBytes(tempByte, 0, tempByte.length);
-						}
-						tempObj=null;
-						innerObj=null;
-						tempByte=null;
-					}
+					var tempByte2:CustomByteArray=packageData(0, a);
+					byteArray.writeBytes(tempByte2, 0, tempByte2.length);
 				}
 			}
 			object=null;
@@ -152,7 +104,7 @@ package common.baseData
 		public static function mappingObject(valueObject:Object, dataBytes:CustomByteArray):Object
 		{
 			
-			if (valueObject is ISocketIn)
+			if (valueObject is ISocketDown)
 			{
 				return valueObject.mappingObject(dataBytes);
 			}

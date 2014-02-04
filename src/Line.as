@@ -13,7 +13,7 @@ package
 	
 	public class Line extends HBox
 	{
-		public static var TYPES:Array=["8", "16", "32", "64", "f64", "String"];
+		public static var TYPES:Array=["8", "16", "32", "64", "String","f32", "f64","u8","u16","u32","u64","Array"];
 		
 		public function Line(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0):void
 		{

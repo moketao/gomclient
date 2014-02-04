@@ -19,7 +19,7 @@ package cmd
 	 * @author Administrator
 	 *
 	 */
-	public class CCMD10000 implements ISocketOut
+	public class CCMD10000 implements ISocketUp
 	{		
 		public var a_serverId:Int16;
 		public var a_openId:String;
@@ -38,15 +38,7 @@ package cmd
 		
 		public function packageData(b:CustomByteArray):void
 		{
-			b.writeInt16(a_serverId);
-			b.writeString(a_openId);
-			b.writeString(b_openKey);
-			b.writeString(c_pf);
-			b.writeString(d_pfKey);
-			b.writeString(e_invKey);
-			b.writeString(f_itime);
-			b.writeString(g_iopenId);
-			b.writeString(h_checkLogin);
+			
 		}
 		
 	}

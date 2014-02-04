@@ -1,6 +1,6 @@
 package common.baseData
 {
-	import game.socket.CustomByteArray;
+	
 
 	public class Int8 extends BaseInt
 	{

@@ -11,6 +11,8 @@ package
 	import flash.utils.ByteArray;
 	
 	import common.baseData.Pack;
+	
+	import mycom.Alert;
 
 
 	//	import uisystem.view.UiSystemMediator;	
@@ -264,21 +266,10 @@ package
 			var dataBytes:CustomByteArray=new CustomByteArray();
 			if (object != null)
 			{
-				if (object is Array && object.length > 0)
-				{
-					var byteArray:CustomByteArray;
-					for (var i:int=0; i < object.length; i++)
-					{
-						byteArray=Pack.packageData(cmd, object[i]);
-						dataBytes.writeBytes(byteArray, 0, byteArray.length);
-					}
-				}
-				else
-				{
-					byteArray=Pack.packageData(cmd, object);
-					dataBytes.writeBytes(byteArray, 0, byteArray.length);
-					
-				}
+				var Ipack:ISocketUp = object as ISocketUp;
+				if(!Ipack) Alert.show("sendMessage 的第二个参数必须是 ISocketUp");
+				Ipack.PackInTo(dataBytes);
+				dataBytes.position = 0;
 			}
 			//装包 
 			var sendBytes:CustomByteArray=new CustomByteArray();
@@ -299,7 +290,6 @@ package
 			this.writeBytes(sendBytes);
 			this.flush();
 			
-			byteArray=null;
 			object=null;
 			dataBytes=null;
 			sendBytes=null;

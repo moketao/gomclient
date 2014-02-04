@@ -47,11 +47,65 @@ package save
 		};
 		public static function SaveClientCmd(path:String,content:String):void
 		{
+			//trace("======================================================================");
+			//trace(path+":");
+			//trace(content);return;
 			var f:File = new File(path);
 			var s:FileStream = new FileStream();
 			s.open(f,FileMode.WRITE);
 			s.writeUTFBytes(content);
 			s.close();
+		}
+		/**
+		 * 对齐注释（不要包含\t，否则效果不佳）
+		 */
+		public static function fixComment(lines:String):String
+		{
+			var out:String="";
+			var a:Array=lines.split("\n");
+			var maxNum:int=0;
+			var a1:Array=[];
+			var a2:Array=[];
+			for (var i:int=0; i < a.length; i++)
+			{
+				var s:String=String(a[i]);
+				var commentPos:int=s.indexOf("//");
+				if (commentPos != -1)
+				{
+					var tmp:String=s.slice(0, commentPos);
+					a1.push(tmp);
+					a2.push(s.slice(commentPos + 2));
+					s=tmp;
+				}
+				else
+				{
+					a1.push(s);
+					a2.push("");
+				}
+				var len:int=s.length;
+				if (len > maxNum)
+					maxNum=s.length;
+			}
+			for (var k:int=0; k < a1.length; k++)
+			{
+				var aline:String=a1[k];
+				var acomm:String=a2[k];
+				var spaceNum:int=maxNum + 1 - aline.length;
+				var space:String="";
+				for (var j:int=0; j < spaceNum; j++)
+				{
+					space+=" ";
+				}
+				if (acomm != "")
+				{
+					out+=  aline + space + "//" + acomm+"\n";
+				}
+				else if (aline != "")
+				{
+					out+=  aline+"\n";
+				}
+			}
+			return out;
 		}
 	}
 }

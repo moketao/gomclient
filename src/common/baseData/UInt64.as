@@ -1,13 +1,13 @@
 package common.baseData
 {
-	public final class Int64 extends Binary64 {
-		public final function set high(value:int):void {
+	public final class UInt64 extends Binary64 {
+		public final function set high(value:uint):void {
 			internalHigh = value
 		}
-		public final function get high():int {
+		public final function get high():uint {
 			return internalHigh
 		}
-		public function Int64(low:uint = 0, high:int = 0) {
+		public function UInt64(low:uint = 0, high:uint = 0) {
 			super(low, high)
 		}
 		public function toString(radix:uint = 10):String {
@@ -19,26 +19,18 @@ package common.baseData
 			}
 			const digitChars:Array = [];
 			const copyOfThis:UInt64 = new UInt64(low, high);
-			if (high < 0) {
-				copyOfThis.bitwiseNot()
-				copyOfThis.add(1)
-			}
 			do {
 				const digit:uint = copyOfThis.div(radix);
 				digitChars.push((digit < 10 ? '0' : 'a').charCodeAt() + digit)
 			} while (copyOfThis.low != 0 || copyOfThis.high != 0)
-			if (high < 0) {
-				digitChars.push('-'.charCodeAt())
-			}
 			return String.fromCharCode.apply(String, digitChars.reverse())
 		}
-		public static function parseInt64(str:String, radix:uint = 0):Int64 {
-			const negative:Boolean = str.search(/^\-/) == 0
-			var i:uint = negative ? 1 : 0
+		public static function parseUInt64(str:String, radix:uint = 0):UInt64 {
+			var i:uint = 0
 			if (radix == 0) {
-				if (str.search(/^\-?0x/) == 0) {
+				if (str.search(/^0x/) == 0) {
 					radix = 16
-					i += 2
+					i = 2
 				} else {
 					radix = 10
 				}
@@ -47,7 +39,7 @@ package common.baseData
 				throw new ArgumentError
 			}
 			str = str.toLowerCase()
-			const result:Int64 = new Int64
+			const result:UInt64 = new UInt64
 			for (; i < str.length; i++) {
 				var digit:uint = str.charCodeAt(i)
 				if (digit >= '0'.charCodeAt() && digit <= '9'.charCodeAt()) {
@@ -62,10 +54,6 @@ package common.baseData
 				}
 				result.mul(radix)
 				result.add(digit)
-			}
-			if (negative) {
-				result.bitwiseNot()
-				result.add(1)
 			}
 			return result
 		}

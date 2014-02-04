@@ -2,11 +2,6 @@ package
 {
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
-	
-	import common.baseData.Int16;
-	import common.baseData.Int32;
-	import common.baseData.Int64;
-	import common.baseData.Int8;
 
 	public class CustomByteArray extends ByteArray
 	{
@@ -18,40 +13,53 @@ package
 			
 		/**
 		 * 读Int8 
-		 * @return 
-		 * 
 		 */		
-		public function readInt8():Int8
+		public function ReadInt8():int
 		{
-			return new Int8(this.readByte());
+			return int(this.readByte());
+		}
+		/**
+		 * 读Int8 
+		 */		
+		public function ReadUInt8():int
+		{
+			return uint(this.readByte());
 		}
 		
 		/**
 		 * 读Int16 
-		 * @return 
-		 * 
 		 */		
-		public function readInt16():Int16
+		public function ReadInt16():int
 		{
-			return new Int16(this.readShort());
+			return this.readShort();
+		}
+		/**
+		 * 读IntU16 
+		 */		
+		public function ReadUInt16():int
+		{
+			return uint(this.readShort());
+		}		
+		/**
+		 * 读Int32 
+		 */		
+		public function ReadInt32():int
+		{
+			return this.readInt();
 		}
 		
 		/**
 		 * 读Int32 
-		 * @return 
-		 * 
 		 */		
-		public function readInt32():Int32
+		public function ReadUInt32():uint
 		{
-			return new Int32(this.readInt());
+			return this.readUnsignedInt();
 		}
-		
+				
 		/**
-		 * 读Int64 
-		 * @return 
-		 * 
+		 * 读Int64 todo:解决读负号的问题，目前只能读正整数
 		 */		
-		public function readInt64():Int64
+		public function ReadInt64():Number
 		{
 			var number:Number = this.readUnsignedByte()*Math.pow(256,7);
 			number+=this.readUnsignedByte()*Math.pow(256,6);
@@ -61,72 +69,91 @@ package
 			number+=this.readUnsignedByte()*Math.pow(256,2);
 			number+=this.readUnsignedByte()*Math.pow(256,1);
 			number+=this.readUnsignedByte()*1;
-			return new Int64(number);
+			return number;
 		}
 		
 		/**
-		 * 读String 
-		 * @return 
-		 * 
+		 * 读UInt64 
 		 */		
-		public function readString():String
+		public function ReadUInt64():Number
 		{
-			return this.readUTF();
+			var number:Number = this.readUnsignedByte()*Math.pow(256,7);
+			number+=this.readUnsignedByte()*Math.pow(256,6);
+			number+=this.readUnsignedByte()*Math.pow(256,5);
+			number+=this.readUnsignedByte()*Math.pow(256,4);
+			number+=this.readUnsignedByte()*Math.pow(256,3);
+			number+=this.readUnsignedByte()*Math.pow(256,2);
+			number+=this.readUnsignedByte()*Math.pow(256,1);
+			number+=this.readUnsignedByte()*1;
+			return number;
 		}
-		
+		/////////////////////////////////////////////////////////////////////////////以上读，以下写
 		/**
 		 * 写Int8 
-		 * @param value
-		 * 
 		 */		
-		public function writeInt8(value:Int8):void
+		public function WriteInt8(value:int):void
 		{
-			this.writeByte(value.value);
+			this.writeByte(value);
 		}
-		
+		/**
+		 * 写UInt8 
+		 */		
+		public function WriteUInt8(value:int):void
+		{
+			this.writeByte(value);
+		}		
 		/**
 		 * 写Int16 
-		 * @param value
-		 * 
 		 */		
-		public function writeInt16(value:Int16):void
+		public function WriteInt16(value:int):void
 		{
-			this.writeShort(value.value);
+			this.writeShort(value);
 		}
-		
+		/**
+		 * 写UInt16 
+		 */		
+		public function WriteUInt16(value:int):void
+		{
+			this.writeShort(value);
+		}		
 		/**
 		 *  写Int32
-		 * @param value
-		 * 
 		 */		
-		public function writeInt32(value:Int32):void
+		public function WriteInt32(value:int):void
 		{
-			this.writeInt(value.value);
+			this.writeInt(value);
 		}
-		
 		/**
-		 * 写Int64 
-		 * @param value
-		 * 
+		 *  写Int32
 		 */		
-		public function writeInt64(value:Int64):void
+		public function WriteUInt32(value:uint):void
 		{
-			var s:String=value.value.toString(2);
+			this.writeUnsignedInt(value);
+		}	
+		/**
+		 * 写Int64 todo:解决负号的问题，目前只能写正整数 
+		 */		
+		public function WriteInt64(value:Number):void
+		{
+			var s:String=value.toString();
+			//todo:有问题，这里输出的不是int64而是uint64，需修正
 			s = ("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"+s).substr(-64);
 			for(var i:int=0;i<8;i++)
 			{
 				this.writeByte( parseInt(s.substr(i*8,8),2));
 			}
 		}
-		
 		/**
-		 * 写String 
-		 * @param value
-		 * 
+		 * 写UInt64 
 		 */		
-		public function writeString(value:String):void
+		public function WriteUInt64(value:Number):void
 		{
-			this.writeUTF(value);
+			var s:String=value.toString();
+			s = ("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"+s).substr(-64);
+			for(var i:int=0;i<8;i++)
+			{
+				this.writeByte( parseInt(s.substr(i*8,8),2));
+			}
 		}
 		
 		public function traceBytes():void{

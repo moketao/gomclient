@@ -20,7 +20,7 @@ package cmd
 	 * @author Administrator
 	 *
 	 */
-	public class SCMD10000 implements ISocketIn
+	public class SCMD10000 implements ISocketDown
 	{
 		public var a_state:Int16;
 
@@ -29,9 +29,9 @@ package cmd
 			
 		}
 		
-		public function mappingObject(dataBytes:CustomByteArray):Object
+		public function UnPackFrom(dataBytes:CustomByteArray):*
 		{
-			a_state = dataBytes.readInt16();
+//			a_state = dataBytes.readInt16();
 			return this;
 		}
 		

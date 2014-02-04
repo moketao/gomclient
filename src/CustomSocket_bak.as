@@ -241,7 +241,7 @@ package
 		 */
 		private function packageData(cmd:uint, object:Object):CustomByteArray
 		{
-			if (object is ISocketOut)
+			if (object is ISocketUp)
 			{
 				return object.packageData();
 			}
@@ -734,7 +734,7 @@ package
 		private function mappingObject(valueObject:Object, dataBytes:CustomByteArray):Object
 		{
 
-			if (valueObject is ISocketIn)
+			if (valueObject is ISocketDown)
 			{
 				return valueObject.mappingObject(dataBytes);
 			}

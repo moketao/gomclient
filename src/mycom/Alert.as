@@ -19,7 +19,7 @@ package mycom
 				one = this;
 			}
 			this.visible = false;
-			setSize(300,50);
+			setSize(400,150);
 			txt = new TextArea(this,3,3,"");
 			txt.setSize(this.width-6,this.height-6-20);
 		}
