@@ -3,7 +3,7 @@ package save {
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 
-	public class ServerUp {
+	public class ServerDown {
 		public static function save(main:GomClient):void {
 			//handle.go
 			var filePath:String=main.pathServer.text + "\\handle.go";
@@ -12,36 +12,12 @@ package save {
 			s.open(f, FileMode.READ);
 
 			var isNodeClass:Boolean;
-			var fileName:String="C" + main.cmd_name.text + "Up"; //文件名
+			var fileName:String="C" + main.cmd_name.text + "Down"; //文件名
 			if (fileName.search(new RegExp(/\d/)) == -1) {
 				fileName=main.cmd_name.text; //如果是数组内的 NodeClass 则不需要加 C前缀和 Up后缀
 				isNodeClass=true;
-			} else {
-				//如果是C10000Up格式的，需要注册到 handle.go
-				var out:String=s.readUTFBytes(s.bytesAvailable);
-				s.close();
-				var reg:RegExp;
-				var old:String;
-				var arr:Array;
-				var strWillAdd:String="\tCMD.C" + main.cmd_name.text + "up = ACMD{" + main.cmd_name.text + ", f" + main.cmd_name.text + "Up}";
-				if (out.search(strWillAdd) == -1) {
-					reg=/\t\/\/moeditor struct start[\s\S]*moeditor struct end/m;
-					arr=out.match(reg);
-					old=String(arr[0]).replace("\t//moeditor struct end", "");
-					old=old + "\tC" + main.cmd_name.text + "up ACMD" + "\n\t//moeditor struct end";
-					out=out.replace(reg, old);
-
-					reg=/\t\/\/moeditor init start[\s\S]*moeditor init end/m;
-					arr=out.match(reg);
-					old=String(arr[0]).replace("\t//moeditor init end", "");
-					old=old + strWillAdd + "\n\t//moeditor init end";
-					out=out.replace(reg, old);
-
-					CmdFile.SaveClientCmd(filePath, out);
-				}
 			}
-
-			out="";
+			var out:String="";
 			var fields:String="";
 			var unpacks:String="";
 			var packs:String="";
@@ -107,20 +83,18 @@ package save {
 				out+="package handle\n\n";
 				out+="import (\n";
 				out+='	. "base"\n';
-				out+='	"fmt"\n';
 				out+=")\n\n";
-				out+="type C" + main.cmd_name.text + "Up struct {\n";
+				out+="type C" + main.cmd_name.text + "Down struct {\n";
 				out+=fields;
 				out+="}\n\n";
-				out+="func f" + main.cmd_name.text + "Up(c uint16, p *Pack) []byte {\n";
-				out+="	s := new(C" + main.cmd_name.text + "Up)\n";
-				out+=unpacks;
-				out+="	fmt.Println(s)//需删除，否则影响性能\n";
-				out+="	res := new (C" + main.cmd_name.text + "Down)\n";
-				out+="	//向 res 赋值：\n";
-				out+="	\n";
-				out+="	return res.ToBytes()\n";
-				out+="}\n\n";
+				out+="func (s *C"+main.cmd_name.text+"Down)PackInTo(p *Pack) {\n";
+				out+=packs;
+				out+="}\n";
+				out+="func (s *C"+main.cmd_name.text+"Down)ToBytes() []byte {\n";
+				out+="	pack := Pack.New()\n";
+				out+="	s.PackInTo(pack)\n";
+				out+="	return pack.Data()\n";
+				out+="}\n";
 
 				filePath=main.pathServer.text + "\\" + fileName + ".go";
 				CmdFile.SaveClientCmd(filePath, out);

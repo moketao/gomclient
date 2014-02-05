@@ -53,7 +53,7 @@ package save {
 				out+="package cmds{\n";
 				out+="	/** " + main.cmd_desc.text + " **/\n";
 				out+="	public class " + fileName + " implements ISocketUp,ISocketDown{\n";
-				out+=fields + "\n";
+				out+=fields + "\n\n";
 				out+="		/** " + main.cmd_desc.text + " **/\n";
 				out+="		public function PosVO(){}\n";
 				out+="		public function PackInTo(b:CustomByteArray):void{\n";

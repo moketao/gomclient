@@ -9,9 +9,11 @@ package save {
 		public static const key2num:Object={"LOGIN": 10, "CHAT": 11, "SCENE": 12, "ROLE": 13, "FRIEND": 14, "BAG": 15, "TASK": 16, "GUILD": 18, "ACTIVITY": 19, "BATTLE": 20, "SYSTEM": 90, "TEAM": 24, "ARENA": 21, "RANK": 22, "PAL": 17, "RIDE": 25, "PK": 26};
 
 		public static function SaveClientCmd(path:String, content:String):void {
-			//trace("======================================================================");
-			//trace(path+":");
-			//trace(content);return;
+			if(false){
+				trace("======================================================================");
+				trace(path+":");
+				trace(content);return;
+			}
 			var f:File=new File(path);
 			var s:FileStream=new FileStream();
 			s.open(f, FileMode.WRITE);

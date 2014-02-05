@@ -1,7 +1,5 @@
-package {
+package cmds {
 	import flash.utils.Dictionary;
-
-	import cmds.SCMD10000;
 
 	public class CommandMap {
 		private static var _instance:CommandMap=null;
@@ -23,14 +21,12 @@ package {
 		}
 
 		private function configCMD():void {
-			_CMDDic[10000]=SCMD10000;
+			_CMDDic[10000]=C10000Down;
 		}
 
-		public function getCMDObject(cmd:int):Object {
-			if (_CMDDic[cmd] == undefined) {
-				return null;
-			}
-			return new _CMDDic[cmd];
+		public static function getCmdOB(cmd:int):* {
+			var a_class:Class = _instance._CMDDic[cmd];
+			return new a_class();
 		}
 
 		/**

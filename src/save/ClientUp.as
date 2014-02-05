@@ -55,7 +55,7 @@ package save {
 				out+="	public class " + fileName + " implements ISocketUp,ISocketDown{\n";
 				out+=fields + "\n";
 				out+="		/** " + main.cmd_desc.text + " **/\n";
-				out+="		public function PosVO(){}\n";
+				out+="		public function "+fileName+"(){}\n";
 				out+="		public function PackInTo(b:CustomByteArray):void{\n";
 				out+=packs;
 				out+="		}\n";

@@ -8,6 +8,18 @@ package {
 	import com.bit101.components.RadioButton;
 	import com.bit101.components.Style;
 	import com.bit101.components.VBox;
+	
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.net.SharedObject;
+	
+	import cmds.C10000Down;
+	import cmds.C10000Up;
+	import cmds.C20000Up;
+	import cmds.CommandMap;
+	import cmds.PosVO;
+	
 	import common.baseData.F32;
 	import common.baseData.F64;
 	import common.baseData.Int16;
@@ -18,14 +30,12 @@ package {
 	import common.baseData.IntU32;
 	import common.baseData.IntU64;
 	import common.baseData.IntU8;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.net.SharedObject;
-	import cmds.C20000Up;
-	import cmds.PosVO;
+	
 	import mycom.Alert;
+	
+	import save.ClientDown;
 	import save.ClientUp;
+	import save.ServerDown;
 	import save.ServerUp;
 
 	[SWF(width=1280, height=400)]
@@ -68,18 +78,16 @@ package {
 		}
 
 		public function click_Send(e:MouseEvent):void {
-			var p1:PosVO=new PosVO();
-			p1.arr=[33, 55];
-			p1.str="我是p1";
-			var p2:PosVO=new PosVO();
-			p2.arr=[7, 8];
-			p2.str="我是p2";
-			var c:C20000Up=new C20000Up();
-			c.a1=[p1, p2];
-			c.a2=127;
-			s.sendMessage(20000, c);
+			s.addCmdListener(10000,on10000);
+			var c:C10000Up = new C10000Up();
+				c.SID = "mkt";
+			s.sendMessage(10000, c);
 		}
-
+		
+		private function on10000(vo:C10000Down):void{
+			trace(vo);
+		}
+		
 		public function click_save(e:MouseEvent):void {
 			if (cmd_name.text == "" || cmd_desc.text == "" || body.numChildren == 0) {
 				Alert.show("未填写完整");
@@ -102,10 +110,11 @@ package {
 			if (upOrDown == "Up") {
 				ClientUp.save(this);
 				ServerUp.save(this);
-				Alert.show("保存完成");
 			} else {
-
+				ClientDown.save(this);
+				ServerDown.save(this);
 			}
+			Alert.show("保存完成");
 		}
 
 		public function getLines():Array {
@@ -171,6 +180,7 @@ package {
 
 			//ui
 			new Alert(stage);
+			new CommandMap();
 			var win:HBox=new HBox(this);
 			var win_left:VBox=new VBox(win);
 			win_left.setSize(200, stage.stageHeight - 20);

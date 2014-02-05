@@ -1,6 +1,6 @@
 package {
 	import com.ericfeminella.collections.HashMap;
-
+	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -8,9 +8,11 @@ package {
 	import flash.external.ExternalInterface;
 	import flash.net.Socket;
 	import flash.utils.ByteArray;
-
+	
+	import cmds.CommandMap;
+	
 	import common.baseData.Pack;
-
+	
 	import mycom.Alert;
 
 
@@ -135,10 +137,23 @@ package {
 		/**
 		 * 处理从服务端收到的数据
 		 */
-		private function getMsg(b:ByteArray):void {
-			trace("====================");
-			//trace("cmd :"+b.readUnsignedShort());
-			trace("data:" + b.readUTFBytes(b.bytesAvailable));
+		private function getMsg(b:CustomByteArray):void {
+			var num:int = b.readUnsignedShort();
+			var vo:*;
+			if(b.bytesAvailable>0){
+				var ob:Object = CommandMap.getCmdOB(num);
+				var i:ISocketDown = ob as ISocketDown;
+				vo = i.UnPackFrom(b);
+			}
+			var hander:Array=_cmdArray[num];
+			if (hander == null || hander.length <= 0) return;
+			for each (var fun:Function in hander){
+				if (vo == null){
+					fun();
+				}else{
+					fun(vo);
+				}
+			}
 		}
 
 		public function cancelHandler():void {
@@ -199,25 +214,30 @@ package {
 		private var _cmdArray:Array=[];
 		private var isReading:Boolean=false;
 		private var Len:int=0;
-		private var Body:ByteArray=new ByteArray();
+		private var Body:CustomByteArray=new CustomByteArray();
 
 
 		/**
 		 *添加某个消息号的监听
 		 * @param cmd	消息号
 		 * @param args	传两个参数，0为处理函数  1为需要填充的数据对象
-		 *
 		 */
 		public function addCmdListener(cmd:int, hander:Function):void {
 			if (_cmdArray[cmd] == null)
 				_cmdArray[cmd]=[];
+			
+			//看是否已经添加，如果已经添加，则不再重复添加
+			var arr:Array = _cmdArray[cmd];
+			for (var i:int = 0; i < arr.length; i++) {
+				var f:Function = arr[i] as Function;
+				if(f==hander) return;
+			}
+			
 			this._cmdArray[cmd].push(hander);
 		}
 
 		/**
 		 *移除 消息号监听
-		 * @param cmd
-		 *
 		 */
 		public function removeCmdListener(cmd:int, listener:Function):void {
 			var handers:Array=this._cmdArray[cmd];
@@ -242,9 +262,10 @@ package {
 			var dataBytes:CustomByteArray=new CustomByteArray();
 			if (object != null) {
 				var Ipack:ISocketUp=object as ISocketUp;
-				if (!Ipack)
+				if (!Ipack){
 					Alert.show("sendMessage 的第二个参数必须是 ISocketUp");
-				return;
+					return;
+				}
 				Ipack.PackInTo(dataBytes);
 				dataBytes.position=0;
 			}
