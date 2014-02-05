@@ -13,7 +13,7 @@
 ![image](https://github.com/moketao/gomclient/raw/master/readme_pic/1.png)
 
 
-以上操作生成如下文件↓
+可生成前后端协议文件（前端 AS3）（后端 Golang）
 
 
 ![image](https://github.com/moketao/gomclient/raw/master/readme_pic/3.png)
