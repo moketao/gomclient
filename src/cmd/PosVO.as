@@ -1,14 +1,11 @@
 package cmd {
-
 	/** Just a Test. **/
 	public class PosVO implements ISocketUp, ISocketDown {
 		public var arr:Array=[]; //Array，包含[u8]
 		public var str:String; //String，Just a str
 
 		/** Just a Test. **/
-		public function PosVO() {
-		}
-
+		public function PosVO() {}
 		public function PackInTo(b:CustomByteArray):void {
 			b.WriteUInt16(arr.length); //写入数组长度，（包含[u8]）
 			for (var i:int=0; i < arr.length; i++) { //深层递归mapping
