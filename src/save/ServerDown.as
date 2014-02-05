@@ -2,22 +2,41 @@ package save {
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	
+	import cmds.C10001Down;
 
 	public class ServerDown {
 		public static function save(main:GomClient):void {
 			//handle.go
-			var filePath:String=main.pathServer.text + "\\handle.go";
+			var filePath:String=main.pathClient.text + "\\CommandMap.as";
 			var f:File=new File(filePath);
 			var s:FileStream=new FileStream();
 			s.open(f, FileMode.READ);
-
+			var out:String="";
 			var isNodeClass:Boolean;
 			var fileName:String="C" + main.cmd_name.text + "Down"; //文件名
 			if (fileName.search(new RegExp(/\d/)) == -1) {
 				fileName=main.cmd_name.text; //如果是数组内的 NodeClass 则不需要加 C前缀和 Up后缀
 				isNodeClass=true;
+			} else {
+				//如果是C10000Down格式的，需要注册到 ComandMap.as
+				out=s.readUTFBytes(s.bytesAvailable);
+				s.close();
+				var reg:RegExp;
+				var old:String;
+				var arr:Array;
+				var strWillAdd:String="\t\t\t_CMDDic[" + main.cmd_name.text + "]=C" + main.cmd_name.text + "Down;";
+				if (out.search(strWillAdd) == -1) {
+					reg=/\t\t\t\/\/dicStart[\s\S]*dicEnd/m;
+					arr=out.match(reg);
+					old=String(arr[0]).replace("\t\t\t//dicEnd", "");
+					old=old + strWillAdd + "\n\t\t\t//dicEnd";
+					out=out.replace(reg, old);
+					
+					CmdFile.SaveClientCmd(filePath, out);
+				}
 			}
-			var out:String="";
+			out="";
 			var fields:String="";
 			var unpacks:String="";
 			var packs:String="";
@@ -91,7 +110,7 @@ package save {
 				out+=packs;
 				out+="}\n";
 				out+="func (s *C"+main.cmd_name.text+"Down)ToBytes() []byte {\n";
-				out+="	pack := Pack.New()\n";
+				out+="	pack := NewPackEmpty()\n";
 				out+="	s.PackInTo(pack)\n";
 				out+="	return pack.Data()\n";
 				out+="}\n";

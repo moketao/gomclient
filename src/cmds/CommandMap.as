@@ -21,7 +21,12 @@ package cmds {
 		}
 
 		private function configCMD():void {
+			//dicStart
 			_CMDDic[10000]=C10000Down;
+			_CMDDic[10001]=C10001Down;
+			_CMDDic[12000]=C12000Down;
+			_CMDDic[12001]=C12001Down;
+			//dicEnd
 		}
 
 		public static function getCmdOB(cmd:int):* {

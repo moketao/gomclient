@@ -112,12 +112,12 @@ package save {
 				out+="type C" + main.cmd_name.text + "Up struct {\n";
 				out+=fields;
 				out+="}\n\n";
-				out+="func f" + main.cmd_name.text + "Up(c uint16, p *Pack) []byte {\n";
+				out+="func f" + main.cmd_name.text + "Up(c uint16, p *Pack, u *Player) []byte {\n";
 				out+="	s := new(C" + main.cmd_name.text + "Up)\n";
 				out+=unpacks;
 				out+="	fmt.Println(s)//需删除，否则影响性能\n";
 				out+="	res := new (C" + main.cmd_name.text + "Down)\n";
-				out+="	//向 res 赋值：\n";
+				out+="	//业务逻辑：\n";
 				out+="	\n";
 				out+="	return res.ToBytes()\n";
 				out+="}\n\n";

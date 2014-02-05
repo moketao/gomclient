@@ -13,12 +13,11 @@ package {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
-	
-	import cmds.C10000Down;
+	import cmds.*;
 	import cmds.C10000Up;
-	import cmds.C20000Up;
+	import cmds.C12000Down;
+	import cmds.C12000Up;
 	import cmds.CommandMap;
-	import cmds.PosVO;
 	
 	import common.baseData.F32;
 	import common.baseData.F64;
@@ -78,16 +77,34 @@ package {
 		}
 
 		public function click_Send(e:MouseEvent):void {
-			s.addCmdListener(10000,on10000);
-			var c:C10000Up = new C10000Up();
-				c.SID = "mkt";
-			s.sendMessage(10000, c);
+			//登录
+			var c1:C10000Up = new C10000Up();
+				c1.SID = "mkt";
+				s.sendMessage(10000,c1);
+				
+			
+			//进入地图A
+			s.addCmdListener(12000,on12000);
+			var c2:C12000Up = new C12000Up();
+				c2.MapName = "MapA";
+			s.sendMessage(12000, c2);
+			
+			//移动
+			s.addCmdListener(12001,on12001);
+			var c3:C12001Up = new C12001Up();
+				c3.XX = 1;
+				c3.ZZ = 2;
+				c3.YY = 3;
+			s.sendMessage(12001, c3);
 		}
-		
-		private function on10000(vo:C10000Down):void{
-			trace(vo);
+		private function on12000(vo:C12000Down):void{
+			if(vo.Flag==1)trace("进入地图");
 		}
-		
+		private function on12001(vo:C12001Down):void{
+			trace(vo.XX);
+			trace(vo.ZZ);
+			trace(vo.YY);
+		}		
 		public function click_save(e:MouseEvent):void {
 			if (cmd_name.text == "" || cmd_desc.text == "" || body.numChildren == 0) {
 				Alert.show("未填写完整");
