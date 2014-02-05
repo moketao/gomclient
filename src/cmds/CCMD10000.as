@@ -1,4 +1,4 @@
-package cmd {
+package cmds {
 	import common.baseData.Int16;
 
 	/**

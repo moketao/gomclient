@@ -1,7 +1,7 @@
 package {
 	import flash.utils.Dictionary;
 
-	import cmd.SCMD10000;
+	import cmds.SCMD10000;
 
 	public class CommandMap {
 		private static var _instance:CommandMap=null;

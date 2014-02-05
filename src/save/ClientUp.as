@@ -50,7 +50,7 @@ package save {
 				packs=CmdFile.fixComment(packs);
 				unpacks=CmdFile.fixComment(unpacks);
 				fileName=main.cmd_name.text; //如果是数组内的 NodeClass 则不需要加 C前缀和 Up后缀
-				out+="package cmd{\n";
+				out+="package cmds{\n";
 				out+="	/** " + main.cmd_desc.text + " **/\n";
 				out+="	public class " + fileName + " implements ISocketUp,ISocketDown{\n";
 				out+=fields + "\n";
@@ -69,7 +69,7 @@ package save {
 			} else {
 				fields=CmdFile.fixComment(fields);
 				packs=CmdFile.fixComment(packs);
-				out+="package cmd{\n";
+				out+="package cmds{\n";
 				out+="	/** " + main.cmd_desc.text + " **/\n";
 				out+="	public class " + fileName + " implements ISocketUp{\n";
 				out+=fields;

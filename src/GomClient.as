@@ -22,8 +22,8 @@ package {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
-	import cmd.C20000Up;
-	import cmd.PosVO;
+	import cmds.C20000Up;
+	import cmds.PosVO;
 	import mycom.Alert;
 	import save.ClientUp;
 	import save.ServerUp;

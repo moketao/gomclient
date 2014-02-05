@@ -1,4 +1,4 @@
-package cmd {
+package cmds {
 	/** Just a Test. **/
 	public class PosVO implements ISocketUp, ISocketDown {
 		public var arr:Array=[]; //Array，包含[u8]

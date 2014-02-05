@@ -1,4 +1,4 @@
-package cmd {
+package cmds {
 	/** Just a Test. **/
 	public class C20000Up implements ISocketUp {
 		public var a1:Array=[]; //Array，包含[PosVO]
