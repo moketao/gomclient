@@ -1,7 +1,6 @@
-package cmd
-{
+package cmd {
 	import common.baseData.Int16;
-	
+
 	/**
 	 *	 *登陆信息
 	 * 协议号:10000
@@ -19,8 +18,7 @@ package cmd
 	 * @author Administrator
 	 *
 	 */
-	public class CCMD10000 implements ISocketUp
-	{		
+	public class CCMD10000 implements ISocketUp {
 		public var a_serverId:Int16;
 		public var a_openId:String;
 		public var b_openKey:String;
@@ -29,17 +27,16 @@ package cmd
 		public var e_invKey:String;
 		public var f_itime:String;
 		public var g_iopenId:String;
-		public var h_checkLogin:String = "HEREWEDONTCHECKOPENKEY";//HEREWEDONTCHECKOPENKEY
+		public var h_checkLogin:String="HEREWEDONTCHECKOPENKEY"; //HEREWEDONTCHECKOPENKEY
+
 //		public var h_checkLogin:String = "";
-		public function CCMD10000()
-		{
-			
+		public function CCMD10000() {
+
 		}
-		
-		public function packageData(b:CustomByteArray):void
-		{
-			
+
+		public function packageData(b:CustomByteArray):void {
+
 		}
-		
+
 	}
 }

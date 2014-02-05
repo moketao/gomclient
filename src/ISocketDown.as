@@ -1,11 +1,9 @@
-package
-{
-	
+package {
 
-	public interface ISocketDown
-	{
+
+	public interface ISocketDown {
 		function UnPackFrom(dataBytes:CustomByteArray):*;
 	}
-	
-	
+
+
 }

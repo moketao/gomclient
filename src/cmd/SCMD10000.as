@@ -1,7 +1,6 @@
-package cmd
-{
+package cmd {
 	import common.baseData.Int16;
-	
+
 
 	/**
 	 *登陆信息
@@ -20,21 +19,18 @@ package cmd
 	 * @author Administrator
 	 *
 	 */
-	public class SCMD10000 implements ISocketDown
-	{
+	public class SCMD10000 implements ISocketDown {
 		public var a_state:Int16;
 
-		public function SCMD10000()
-		{
-			
+		public function SCMD10000() {
+
 		}
-		
-		public function UnPackFrom(dataBytes:CustomByteArray):*
-		{
+
+		public function UnPackFrom(dataBytes:CustomByteArray):* {
 //			a_state = dataBytes.readInt16();
 			return this;
 		}
-		
+
 
 	}
 }
