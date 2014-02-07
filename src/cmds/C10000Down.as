@@ -1,5 +1,6 @@
 package cmds{
 	import com.moketao.socket.CustomByteArray;
+	import com.moketao.socket.ISocketDown;
 
 	/** 登录 **/
 	public class C10000Down implements ISocketDown{

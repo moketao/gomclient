@@ -1,5 +1,6 @@
 package cmds{
 	import com.moketao.socket.CustomByteArray;
+	import com.moketao.socket.ISocketUp;
 
 	/** 申请进入某地图或FB **/
 	public class C12000Up implements ISocketUp{

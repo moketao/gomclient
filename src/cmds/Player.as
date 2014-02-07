@@ -1,5 +1,7 @@
 package cmds{
 	import com.moketao.socket.CustomByteArray;
+	import com.moketao.socket.ISocketDown;
+	import com.moketao.socket.ISocketUp;
 
 	/** 玩家 **/
 	public class Player implements ISocketUp,ISocketDown{

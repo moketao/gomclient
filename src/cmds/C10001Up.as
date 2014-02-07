@@ -1,5 +1,6 @@
 package cmds{
 	import com.moketao.socket.CustomByteArray;
+	import com.moketao.socket.ISocketUp;
 
 	/** 用SID查询某玩家是否在线 **/
 	public class C10001Up implements ISocketUp{

@@ -1,5 +1,6 @@
 package cmds{
 	import com.moketao.socket.CustomByteArray;
+	import com.moketao.socket.ISocketUp;
 
 	/** 移动 **/
 	public class C12001Up implements ISocketUp{

@@ -1,5 +1,4 @@
-package cmds {
-	import com.moketao.socket.CustomByteArray;
+package com.moketao.socket {
 	public interface ISocketDown {
 		function UnPackFrom(dataBytes:CustomByteArray):*;
 	}

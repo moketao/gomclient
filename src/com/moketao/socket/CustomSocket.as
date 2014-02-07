@@ -14,8 +14,6 @@ package com.moketao.socket {
 	import common.baseData.Pack;
 	
 	import mycom.Alert;
-	import cmds.ISocketDown;
-	import cmds.ISocketUp;
 
 
 	//	import uisystem.view.UiSystemMediator;	

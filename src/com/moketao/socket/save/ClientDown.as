@@ -51,6 +51,7 @@ package com.moketao.socket.save {
 				unpacks=CmdFile.fixComment(unpacks);
 				fileName=main.cmd_name.text; //如果是数组内的 NodeClass 则不需要加 C前缀和 Up后缀
 				out+="package cmds{\n";
+				out+="import com.moketao.socket.*;\n";
 				out+="	/** " + main.cmd_desc.text + " **/\n";
 				out+="	public class " + fileName + " implements ISocketUp,ISocketDown{\n";
 				out+=fields + "\n\n";
@@ -70,6 +71,7 @@ package com.moketao.socket.save {
 				fields=CmdFile.fixComment(fields);
 				packs=CmdFile.fixComment(packs);
 				out+="package cmds{\n";
+				out+="import com.moketao.socket.*;\n";
 				out+="	/** " + main.cmd_desc.text + " **/\n";
 				out+="	public class " + fileName + " implements ISocketDown{\n";
 				out+=fields;

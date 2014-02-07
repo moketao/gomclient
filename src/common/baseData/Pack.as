@@ -2,8 +2,8 @@ package common.baseData {
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import com.moketao.socket.CustomByteArray;
-	import cmds.ISocketDown;
-	import cmds.ISocketUp;
+	import com.moketao.socket.ISocketDown;
+	import com.moketao.socket.ISocketUp;
 
 	public class Pack {
 		public static function packageData(cmd:uint, object:Object):CustomByteArray {

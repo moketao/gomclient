@@ -1,5 +1,4 @@
-package cmds {
-	import com.moketao.socket.CustomByteArray;
+package com.moketao.socket {
 	public interface ISocketUp {
 		function PackInTo(b:CustomByteArray):void;
 	}
