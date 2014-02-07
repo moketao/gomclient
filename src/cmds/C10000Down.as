@@ -1,4 +1,6 @@
 package cmds{
+	import com.moketao.socket.CustomByteArray;
+
 	/** 登录 **/
 	public class C10000Down implements ISocketDown{
 		public var Flag:int; //8，1登录成功，0登录失败

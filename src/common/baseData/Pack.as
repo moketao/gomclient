@@ -1,6 +1,9 @@
 package common.baseData {
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
+	import com.moketao.socket.CustomByteArray;
+	import cmds.ISocketDown;
+	import cmds.ISocketUp;
 
 	public class Pack {
 		public static function packageData(cmd:uint, object:Object):CustomByteArray {

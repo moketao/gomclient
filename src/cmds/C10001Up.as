@@ -1,4 +1,6 @@
 package cmds{
+	import com.moketao.socket.CustomByteArray;
+
 	/** 用SID查询某玩家是否在线 **/
 	public class C10001Up implements ISocketUp{
 		public var SID:String; //String，玩家唯一标示

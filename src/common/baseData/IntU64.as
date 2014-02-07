@@ -1,4 +1,5 @@
 package common.baseData {
+	import com.moketao.socket.CustomByteArray;
 
 	/**
 	 *  在装包、解包的时候用的是ByteArray的writeDouble与readDouble，

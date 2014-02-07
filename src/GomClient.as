@@ -32,10 +32,13 @@ package {
 	
 	import mycom.Alert;
 	
-	import save.ClientDown;
-	import save.ClientUp;
-	import save.ServerDown;
-	import save.ServerUp;
+	import com.moketao.socket.save.ClientDown;
+	import com.moketao.socket.save.ClientUp;
+	import com.moketao.socket.save.ServerDown;
+	import com.moketao.socket.save.ServerUp;
+	import com.moketao.socket.CustomSocket;
+	import com.moketao.socket.save.Line;
+	import com.moketao.socket.save.LineData;
 
 	[SWF(width=1280, height=400)]
 	public class GomClient extends Sprite {

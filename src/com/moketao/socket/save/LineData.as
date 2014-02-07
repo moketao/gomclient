@@ -1,4 +1,4 @@
-package {
+package com.moketao.socket.save {
 
 	public class LineData {
 		public var desc:String;

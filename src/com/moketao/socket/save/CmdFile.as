@@ -1,4 +1,4 @@
-package save {
+package com.moketao.socket.save {
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;

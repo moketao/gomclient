@@ -1,4 +1,4 @@
-package {
+package com.moketao.socket {
 	import com.ericfeminella.collections.HashMap;
 	
 	import flash.events.Event;
@@ -14,6 +14,8 @@ package {
 	import common.baseData.Pack;
 	
 	import mycom.Alert;
+	import cmds.ISocketDown;
+	import cmds.ISocketUp;
 
 
 	//	import uisystem.view.UiSystemMediator;	

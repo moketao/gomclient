@@ -1,4 +1,5 @@
 package common.baseData {
+	import com.moketao.socket.CustomByteArray;
 
 
 	public class Int8 extends BaseInt {

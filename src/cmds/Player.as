@@ -1,4 +1,6 @@
 package cmds{
+	import com.moketao.socket.CustomByteArray;
+
 	/** 玩家 **/
 	public class Player implements ISocketUp,ISocketDown{
 		public var SID:String;      //String，随机字符串

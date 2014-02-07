@@ -1,4 +1,4 @@
-package {
+package com.moketao.socket {
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 

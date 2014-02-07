@@ -1,14 +1,14 @@
-package save {
+package com.moketao.socket.save {
 
 
-	public class ClientUp {
+	public class ClientDown {
 		public static function save(main:GomClient):void {
 			var out:String="";
 			var fields:String="";
 			var packs:String="";
 			var unpacks:String="";
 			var isNodeClass:Boolean;
-			var fileName:String="C" + main.cmd_name.text + "Up"; //文件名
+			var fileName:String="C" + main.cmd_name.text + "Down"; //文件名
 			if (fileName.search(new RegExp(/\d/)) == -1) {
 				fileName=main.cmd_name.text; //如果是数组内的 NodeClass 则不需要加 C前缀和 Up后缀
 				isNodeClass=true;
@@ -55,7 +55,7 @@ package save {
 				out+="	public class " + fileName + " implements ISocketUp,ISocketDown{\n";
 				out+=fields + "\n\n";
 				out+="		/** " + main.cmd_desc.text + " **/\n";
-				out+="		public function "+fileName+"(){}\n";
+				out+="		public function PosVO(){}\n";
 				out+="		public function PackInTo(b:CustomByteArray):void{\n";
 				out+=packs;
 				out+="		}\n";
@@ -71,12 +71,13 @@ package save {
 				packs=CmdFile.fixComment(packs);
 				out+="package cmds{\n";
 				out+="	/** " + main.cmd_desc.text + " **/\n";
-				out+="	public class " + fileName + " implements ISocketUp{\n";
+				out+="	public class " + fileName + " implements ISocketDown{\n";
 				out+=fields;
 				out+="		/** " + main.cmd_desc.text + " **/\n";
 				out+="		public function " + fileName + "(){}\n"
-				out+="		public function PackInTo(b:CustomByteArray):void{\n";
-				out+=packs;
+				out+="		public function UnPackFrom(b:CustomByteArray):*{\n";
+				out+=unpacks;
+				out+="			return this;\n";
 				out+="		}\n";
 				out+="	}\n"
 				out+="}\n"

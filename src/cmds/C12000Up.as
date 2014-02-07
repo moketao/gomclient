@@ -1,4 +1,6 @@
 package cmds{
+	import com.moketao.socket.CustomByteArray;
+
 	/** 申请进入某地图或FB **/
 	public class C12000Up implements ISocketUp{
 		public var MapName:String; //String，地图名字

@@ -1,4 +1,5 @@
 package common.baseData {
+	import com.moketao.socket.CustomByteArray;
 
 	public class Int16 extends BaseInt {
 		public function Int16(value:int=-1) {

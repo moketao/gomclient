@@ -1,4 +1,6 @@
 package cmds{
+	import com.moketao.socket.CustomByteArray;
+
 	/** 移动 **/
 	public class C12001Down implements ISocketDown{
 		public var XX:Number;  //f32，横坐标
