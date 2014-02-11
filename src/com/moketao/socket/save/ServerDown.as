@@ -107,7 +107,7 @@ package com.moketao.socket.save {
 				out+=fields;
 				out+="}\n\n";
 				out+="func (s *C"+main.cmd_name.text+"Down)PackInTo(p *Pack) {\n";
-				out+="p.WriteUInt16("+main.cmd_name.text+") //写入协议号\n";
+				out+="	p.WriteUInt16("+main.cmd_name.text+") //写入协议号\n";
 				out+=packs;
 				out+="}\n";
 				out+="func (s *C"+main.cmd_name.text+"Down)ToBytes() []byte {\n";
